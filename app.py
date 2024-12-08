@@ -12,10 +12,8 @@ app = Flask(__name__)
 logging.basicConfig(level=logging.INFO)
 
 # Environment variables for configuration
-PORT = int(os.getenv('PORT', 5000))
-DEBUG_MODE = os.getenv('DEBUG', 'False') == 'True'
 SENDER_EMAIL = os.getenv('SENDER_EMAIL', 'capstonebpresentation@gmail.com')
-SENDER_PASSWORD = os.getenv('SENDER_PASSWORD', 'your-email-password')
+SENDER_PASSWORD = os.getenv('SENDER_PASSWORD', 'luomnnahalgrxpvh')  # Default fallback password
 
 # Store OTPs with email as key
 otps = {}
@@ -40,7 +38,9 @@ def send_email(recipient_email, otp):
         logging.info(f"OTP sent to {recipient_email}")
     except Exception as e:
         logging.error(f"Failed to send email: {str(e)}")
-        raise
+        return False  # Indicate failure
+
+    return True
 
 @app.route('/send_otp', methods=['POST'])
 def handle_send_otp():
@@ -50,7 +50,9 @@ def handle_send_otp():
 
     otp = str(random.randint(100000, 999999))
     otps[email] = otp
-    send_email(email, otp)
+    if not send_email(email, otp):
+        return jsonify({'error': 'Failed to send OTP'}), 500
+
     return jsonify({'message': 'OTP sent successfully'}), 200
 
 @app.route('/validate_otp', methods=['POST'])
@@ -74,4 +76,4 @@ def internal_error(error):
     return jsonify({'error': 'Server error'}), 500
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=PORT, debug=DEBUG_MODE)
+    app.run(debug=True)
