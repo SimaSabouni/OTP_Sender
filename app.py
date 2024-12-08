@@ -12,8 +12,10 @@ app = Flask(__name__)
 logging.basicConfig(level=logging.INFO)
 
 # Environment variables for configuration
+PORT = int(os.getenv('PORT', 5000))  # Use port from environment or default to 5000
+DEBUG_MODE = os.getenv('DEBUG', 'False').lower() in ['true', '1', 't']  # Convert to boolean
 SENDER_EMAIL = os.getenv('SENDER_EMAIL', 'capstonebpresentation@gmail.com')
-SENDER_PASSWORD = os.getenv('SENDER_PASSWORD', 'luomnnahalgrxpvh')  # Default fallback password
+SENDER_PASSWORD = os.getenv('SENDER_PASSWORD', 'luomnnahalgrxpvh')  # No default for security reasons
 
 # Store OTPs with email as key
 otps = {}
@@ -77,4 +79,3 @@ def internal_error(error):
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=PORT, debug=DEBUG_MODE)
-
